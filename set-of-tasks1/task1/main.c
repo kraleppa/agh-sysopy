@@ -1,29 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h> 
+#include <string.h>
 
-int *createTable(int size){
-    int *table = (int*) malloc (size * sizeof(int));
-    for (int i = 0; i < size; i++){
-        table[i] = i;
-    }
-    return table;
+//connects two strings
+char *concat(const char *s1, const char *s2)
+{
+    char *result = malloc(strlen(s1) + strlen(s2) + 1);
+    strcpy(result, s1);
+    strcat(result, s2);
+    return result;
 }
 
-void printTable(int *table, int size){
-    for (int i = 0; i < size; i++){
-        printf("%d\n", table[i]);
-    }
-}
-
-void delteTable(int *table){
-    free(table);
+//compares two files and saves the result to tmp.txt
+void compareTwoFiles(char *fileName1, char *fileName2){
+    char *command = concat("diff ", concat(fileName1, concat(" ", concat(fileName2, " > tmp.txt"))));
+    system(command);
 }
 
 
 int main(){
-    printf("Hello World\n");
-    int *table = createTable(8);
-    printTable(table, 8);
-    //free(table);
-    return 0;
+    compareTwoFiles("a.txt", "b.txt");
 }
