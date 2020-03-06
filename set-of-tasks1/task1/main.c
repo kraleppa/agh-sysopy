@@ -42,16 +42,28 @@ void initializeBlockOfEditingOperations(){
         exit(EXIT_FAILURE);
     }
     int numberOfOperations = getNumberOfOperations();
-    printf("AAAAAa");
     char **block = calloc(numberOfOperations, sizeof(char*));
-    
+    char *operation = "null";
     int i = 0;
     while (fgets(buffer, 255, filePoiner)){
         if (isdigit(buffer[0])){
-            block[i] = "eluwina";
+            if (i != 0){
+                block[i - 1] = operation;
+            }
+            operation = "";
+            operation = concat(operation, buffer);
+
             i++;
-        }  
+            
+        } else {
+            operation = concat(operation, buffer);
+        }
     }
+    block[i - 1] = operation;
+    printf("Value at bp1: \n%s", block[0]);
+    printf("Value at bp2: \n%s", block[1]);
+    printf("Value at bp3: \n%s", block[2]);
+
 }
 
 
