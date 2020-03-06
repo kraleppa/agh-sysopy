@@ -66,43 +66,96 @@ char **initializeBlockOfEditingOperations(){
     return block;
 }
 
-char ***initializeMainTable(int numberOfSequences){
-    char ***mainTable = calloc(numberOfSequences, sizeof(char**));
-    return mainTable;
-}
-
-int findLengthOfTable(char **table){
-    int i = 0;
-    while (table[i] != NULL){
-        printf("aaa%s\n", table[i]);
-        i++;
-    }
-    return i;
-}
-
-struct Block{
+struct Table {
     char ***mainTable;
-    int length;
-    int *lengthOfEditionOperations;
+    int mainTableLength;
+    int *operationsBlockLength;
 };
 
-struct Block initilaizeBlock (char *input){
-    struct Block block;
-    block.length = 1;                           //liczba par plikow
-    block.lengthOfEditionOperations = calloc(block.length, sizeof(int));        //dlugosc kazdego bloku edycyjnego
-    block.lengthOfEditionOperations[0] = 3;
-    block.mainTable = initializeMainTable(1);
-    //compareTwoFiles();
-    block.mainTable[0] = initializeBlockOfEditingOperations();
 
-    return block;
+struct Table initializeTable(){
+    struct Table table;
+    table.mainTableLength = 0;
+    table.operationsBlockLength = NULL;
+    return table;
 }
 
+int addOperationsToTable(struct Table *table){
+    if  (table == NULL){
+        printf("Null pointer exception\n");
+        return -1;
+    }
+    if (table -> mainTableLength == 0){
+        table -> mainTableLength = 1;
+        table -> operationsBlockLength = calloc(1, sizeof(int));
+        table -> operationsBlockLength[0] = getNumberOfOperations();
 
+        table -> mainTable = calloc(1, sizeof(char**));
+        table -> mainTable[0] = initializeBlockOfEditingOperations();
+        return 0;
+    }
+
+    table -> mainTableLength++;
+    int length = table -> mainTableLength;
+    table -> operationsBlockLength = realloc(table -> operationsBlockLength, length * sizeof(int));
+    table -> operationsBlockLength[length - 1] = getNumberOfOperations();
+
+    table -> mainTable = realloc(table -> mainTable, length * sizeof(char**));
+    table -> mainTable[length - 1] = initializeBlockOfEditingOperations();
+    return length - 1;
+}
+
+int getInformationsAboutBlock(struct Table *table, int index){
+    if  (table == NULL){
+        printf("Null pointer exception\n");
+        return -1;
+    }
+    if (index > table -> mainTableLength - 1){
+        printf("index is bigger than length of table!");
+        return -1;
+    }
+    return table -> operationsBlockLength[index];
+}
+
+void deleteBlock(struct Table *table, int index){
+    if  (table == NULL){
+        printf("Null pointer exception\n");
+        return;
+    }
+    if (index > table -> mainTableLength - 1){
+        printf("index is bigger than length of table!");
+        return;
+    }
+    char **blockTable = table -> mainTable[index];
+    int blockTableLength = table -> operationsBlockLength[index];
+    table -> operationsBlockLength[index] = -1;
+    for (int i = 0; i < blockTableLength; i++){
+        free(blockTable[i]);
+    }
+    free(blockTable);
+}
+
+void deleteOperation(struct Table *table, int mainIndex, int blockIndex){
+    if  (table == NULL){
+        printf("Null pointer exception\n");
+        return;
+    }
+    if (mainIndex > table -> mainTableLength - 1){
+        printf("index is bigger than length of table!");
+        return;
+    }
+    if (blockIndex > table -> operationsBlockLength[mainIndex] - 1){
+        printf("index is bigger than length of table!");
+        return;
+    }
+
+    free(table -> mainTable[mainIndex][blockIndex]);
+}
 
 int main(){
-    char ***mainTable = initializeMainTable(1);
-    mainTable[0] = initializeBlockOfEditingOperations();
-    // printf("%s\n", mainTable[0][1]);
-    printf("%d\n", findLengthOfTable(mainTable[0]));
+    struct Table table = initializeTable();
+    addOperationsToTable(&table);
+    addOperationsToTable(&table);
+    deleteOperation(&table, 1, 1);
+    printf("%d\n", getInformationsAboutBlock(&table, 1));
 }
