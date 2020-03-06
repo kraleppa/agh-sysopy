@@ -18,6 +18,7 @@ void compareTwoFiles(char *fileName1, char *fileName2){
     system(command);
 }
 
+//counts how many operations is in the tmp.txt file
 int getNumberOfOperations(){
     FILE *filePoiner = fopen("tmp.txt", "r");
     if (filePoiner == NULL){
@@ -35,7 +36,8 @@ int getNumberOfOperations(){
     return numberOfOperations;
 }
 
-void initializeBlockOfEditingOperations(){
+//initilaize Block of Editing operations based on tmp.txt
+char **initializeBlockOfEditingOperations(){
     FILE *filePoiner = fopen("tmp.txt", "r");
     char buffer[255];
     if (filePoiner == NULL){
@@ -60,13 +62,47 @@ void initializeBlockOfEditingOperations(){
         }
     }
     block[i - 1] = operation;
-    printf("Value at bp1: \n%s", block[0]);
-    printf("Value at bp2: \n%s", block[1]);
-    printf("Value at bp3: \n%s", block[2]);
 
+    return block;
+}
+
+char ***initializeMainTable(int numberOfSequences){
+    char ***mainTable = calloc(numberOfSequences, sizeof(char**));
+    return mainTable;
+}
+
+int findLengthOfTable(char **table){
+    int i = 0;
+    while (table[i] != NULL){
+        printf("aaa%s\n", table[i]);
+        i++;
+    }
+    return i;
+}
+
+struct Block{
+    char ***mainTable;
+    int length;
+    int *lengthOfEditionOperations;
+};
+
+struct Block initilaizeBlock (char *input){
+    struct Block block;
+    block.length = 1;                           //liczba par plikow
+    block.lengthOfEditionOperations = calloc(block.length, sizeof(int));        //dlugosc kazdego bloku edycyjnego
+    block.lengthOfEditionOperations[0] = 3;
+    block.mainTable = initializeMainTable(1);
+    //compareTwoFiles();
+    block.mainTable[0] = initializeBlockOfEditingOperations();
+
+    return block;
 }
 
 
+
 int main(){
-    initializeBlockOfEditingOperations();
+    char ***mainTable = initializeMainTable(1);
+    mainTable[0] = initializeBlockOfEditingOperations();
+    // printf("%s\n", mainTable[0][1]);
+    printf("%d\n", findLengthOfTable(mainTable[0]));
 }
