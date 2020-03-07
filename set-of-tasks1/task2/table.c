@@ -157,7 +157,9 @@ void showAllTable(struct Table table){
     for (int i = 0; i < table.mainTableLength; i++){
         printf("Operation block %d: \n", i);
         for (int j = 0; j < table.operationsBlockLength[i]; j++){
-            printf("   Operation %d: \n      %s", j, table.mainTable[i][j]);
+            if (table.mainTable[i][j] != NULL){
+                printf("   Operation %d: \n      %s", j, table.mainTable[i][j]);
+            }
         }
     }
 }
