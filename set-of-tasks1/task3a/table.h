@@ -1,11 +1,8 @@
-typedef int SOCKET;
-
-
-typedef struct Table {
+struct Table {
     char ***mainTable;
     int mainTableLength;
     int *operationsBlockLength;
-} PROSZE;
+};
 
 char *concat(const char *s1, const char *s2);
 void compareTwoFiles(char *fileName1, char *fileName2);
