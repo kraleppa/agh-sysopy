@@ -149,15 +149,17 @@ void deleteOperation(struct Table *table, int mainIndex, int blockIndex){
         printf("index is bigger than length of table!");
         return;
     }
-
-    free(table -> mainTable[mainIndex][blockIndex]);
+    char **blockTable = table -> mainTable[mainIndex];
+    free(blockTable[blockIndex]);
 }
 
 void showAllTable(struct Table table){
     for (int i = 0; i < table.mainTableLength; i++){
         printf("Operation block %d: \n", i);
         for (int j = 0; j < table.operationsBlockLength[i]; j++){
-            printf("   Operation %d: \n      %s", j, table.mainTable[i][j]);
+            if (table.mainTable[i][j] != NULL && isdigit(table.mainTable[i][j][0])){
+                printf("   Operation %d: \n      %s", j, table.mainTable[i][j]);
+            }
         }
     }
 }

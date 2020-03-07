@@ -1,0 +1,37 @@
+Dostepne jest 5 plikow o roznych zawartosciach i dlugosciach:
+a.txt, b.txt, c.txt, ld.txt, le.txt
+
+do zmierzenia czasu porownywania plikow uzylem polecenia time
+
+plik1   plik2   real    user    sys
+a.txt   b.txt   0,003s  0,002s  0,002s
+ld.txt  le.txt  0,004s  0,001s  0,003s
+d.txt   c.txt   0,003s  0,000s  0,003s
+
+
+Zapisywanie plików w pamięci. Do przeanalizowania czasu zapisu plikow w pamięci użyłem biblioteki time.h
+
+plik1   plik2   time
+a.txt   b.txt   0,000035s
+a.txt   c.txt   0,000030s
+b.txt   c.txt   0,000027s
+le.txt  ld.txt  0,000058s
+
+Czas usuwania zaolokowanych blokow zmierzylem podobnie jak czas ich alokowania
+
+plik1   plik2   time
+a.txt   b.txt   0,00002
+a.txt   c.txt   0,00001
+b.txt   c.txt   0,00001
+
+czas kilkakrotnego dodawania i usuwania zmierzylem za pomoca polecnia time
+
+dodanie a.txt:b.txt, usuniecie ich, dodanie a.txt:b.txt ponownie                                                                   
+./main compare_pairs a.txt:b.txt remove_block 0 compare_pairs a.txt:b.txt   
+real    user    sys
+0,007s  0,004s  0,003s
+
+dodanie a.txt:b.txt, usuniecie ich, dodanie le.txt:ld.txt, usuniecie ich
+./main compare_pairs a.txt:b.txt remove_block 0 compare_pairs le.txt:ld.txt remove_block 1
+real    user    sys
+0,020s  0,011s  0,009s

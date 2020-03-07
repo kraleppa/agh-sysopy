@@ -3,6 +3,7 @@
 #include "table.h"
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 
 struct Table newTable(){
     struct Table table = initializeTable();
@@ -10,6 +11,8 @@ struct Table newTable(){
 }
 
 void addComparesToTable(struct Table *table, char **pairs, int size){     //pairs[x] = "file1A.txt:file1B.txt"
+    clock_t start, stop;
+    
     char korektor[] = ":";
     for (int i = 0; i < size; i++){
         //zamieniam pairs na statyczne
@@ -25,7 +28,11 @@ void addComparesToTable(struct Table *table, char **pairs, int size){     //pair
         char *plik2 = token;
 
         compareTwoFiles(plik1, plik2);
+        start = clock();
         addOperationsToTable(table);
+        stop = clock();
+
+        printf("%d argument: %f\n", i, (((double) (stop - start)) / CLOCKS_PER_SEC));
     }
 }
 
@@ -39,12 +46,23 @@ void addCompareToTable(struct Table *table, char *pair){
     char *plik1 = token;
     token = strtok(NULL, korektor);
     char *plik2 = token;
+    
     compareTwoFiles(plik1, plik2);
+
+    //clock_t start, stop;
+    //start = clock();
     addOperationsToTable(table);
+    //stop = clock();
+
+    //printf("argument: %f\n", (((double) (stop - start)) / CLOCKS_PER_SEC));
 }
 
 void removeBlock(struct Table *table, int index){
+    // clock_t start, stop;
+    // start = clock();
     deleteBlock(table, index);
+    // stop = clock();
+    // printf("argument: %f\n", (((double) (stop - start)) / CLOCKS_PER_SEC));
 }
 
 void removeOperation(struct Table *table, int blockIndex, int operationIndex){
@@ -82,7 +100,7 @@ void readFromCommandLine(char *argv[], int argc){
             continue;
         }
     }
-    showAllTable(table);
+    //showAllTable(table);
 }
 
 
