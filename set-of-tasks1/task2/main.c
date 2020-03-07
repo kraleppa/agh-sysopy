@@ -29,6 +29,20 @@ void addComparesToTable(struct Table *table, char **pairs, int size){     //pair
     }
 }
 
+void addCompareToTable(struct Table *table, char *pair){
+    char korektor[] = ":";
+    char nowa[strlen(pair)];
+    for (int j = 0; j < strlen(pair); j++){
+            nowa[j] = pair[j];
+    }
+    char *token = strtok(nowa, korektor);
+    char *plik1 = token;
+    token = strtok(NULL, korektor);
+    char *plik2 = token;
+    compareTwoFiles(plik1, plik2);
+    addOperationsToTable(table);
+}
+
 void removeBlock(struct Table *table, int index){
     deleteBlock(table, index);
 }
@@ -37,19 +51,39 @@ void removeOperation(struct Table *table, int blockIndex, int operationIndex){
     deleteOperation(table, blockIndex, operationIndex);
 }
 
+void readFromCommandLine(char *argv[], int argc){
+    struct Table table;
+    table = initializeTable();
+    bool filesStream = false;
+
+    for (int i = 0; i < argc; i++){
+        if (strcmp(argv[i], "compare_pairs") == 0){
+            filesStream = true;
+            continue;
+        }
+
+        if (strcmp(argv[i], "remove_block") == 0){
+            filesStream = false;
+            continue;
+            
+        }
+
+        if (strcmp(argv[i], "remove_operation") == 0){
+            filesStream = false;
+            continue;
+        }
+
+        if (filesStream){
+            addCompareToTable(&table, argv[i]);
+            continue;
+        }
+    }
+    showAllTable(table);
+}
+
 
 
 int main(int argc, char *argv[])
 {
-    char **pairs = calloc(2, sizeof(char*));
-    pairs[0] = "a.txt:b.txt";
-    pairs[1] = "a.txt:c.txt";
-
-    struct Table table;
-    table = newTable();
-    addComparesToTable(&table, pairs, 2);
-    removeBlock(&table, 1);
-    showAllTable(table);
-    removeOperation(&table, 0, 1);
-    showAllTable(table);
+    readFromCommandLine(argv, argc);
 }

@@ -1,11 +1,8 @@
-0a1
-> jjj kkk
-2,3c3
-< bbb ccc
-< ddd
+3c3
+< fff ccc
 ---
 > kkk ccc
 5c5
-< hhh iii
+< bbb ggg
 ---
 > ddd ggg
