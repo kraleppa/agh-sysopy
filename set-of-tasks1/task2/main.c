@@ -64,12 +64,16 @@ void readFromCommandLine(char *argv[], int argc){
 
         if (strcmp(argv[i], "remove_block") == 0){
             filesStream = false;
+            removeBlock(&table, (int)(argv[i + 1][0] - '0'));
+            i++;
             continue;
             
         }
 
         if (strcmp(argv[i], "remove_operation") == 0){
             filesStream = false;
+            removeOperation(&table, (int)(argv[i + 1][0] - '0'), (int)(argv[i + 2][0] - '0'));
+            i += 2;
             continue;
         }
 
