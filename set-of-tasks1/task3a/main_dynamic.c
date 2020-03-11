@@ -1,122 +1,97 @@
 #include <stdio.h>
 #include <curses.h>
+#include "table.h"
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
-#include "table.h"
 
 #include <dlfcn.h>
-
 
 void *dl_handle;
 
 typedef void *(*arbitrary)();
 
-void addComparesToTable(struct Table *table, char **pairs, int size){     //pairs[x] = "file1A.txt:file1B.txt"
-    clock_t start, stop;
-    
-    char korektor[] = ":";
-    for (int i = 0; i < size; i++){
-        //zamieniam pairs na statyczne
-        char nowa[strlen(pairs[i])];
-        char *pairsCopy = pairs[i];
-        for (int j = 0; j < strlen(pairs[i]); j++){
-            nowa[j] = pairsCopy[j];
-        }
-        //dziele sekwencje na 2 pliki
-        char *token = strtok(nowa, korektor);
-        char *plik1 = token;
-        token = strtok(NULL, korektor);
-        char *plik2 = token;
-
-        arbitrary fcompareTwoFiles;
-        *(void **)(&fcompareTwoFiles) = dlsym(dl_handle, "compareTwoFiles");
-        fcompareTwoFiles(plik1, plik2);
-        start = clock();
-        arbitrary faddOperationsToTable;
-        *(void **)(&faddOperationsToTable) = dlsym(dl_handle, "addOperationsToTable");
-        faddOperationsToTable(table);
-        stop = clock();
-
-        printf("%d argument: %f\n", i, (((double) (stop - start)) / CLOCKS_PER_SEC));
-    }
+char *concat_(const char *s1, const char *s2)
+{
+    char *result = malloc(strlen(s1) + strlen(s2) + 1);
+    strcpy(result, s1);
+    strcat(result, s2);
+    return result;
 }
 
-void addCompareToTable(struct Table *table, char *pair){
-    char korektor[] = ":";
-    char nowa[strlen(pair)];
-    for (int j = 0; j < strlen(pair); j++){
-            nowa[j] = pair[j];
-    }
-    char *token = strtok(nowa, korektor);
-    char *plik1 = token;
-    token = strtok(NULL, korektor);
-    char *plik2 = token;
-    
-    arbitrary fcompareTwoFiles;
-    *(void **)(&fcompareTwoFiles) = dlsym(dl_handle, "compareTwoFiles");
-    fcompareTwoFiles(plik1, plik2);
+void compare_pairs(char *pairs){
+    arbitrary fcompareSequence;
+    *(void **)(&fcompareSequence) = dlsym(dl_handle, "compareSequence");
+    fcompareSequence(pairs);
+}
 
-    clock_t start, stop;
-    start = clock();
+void save_tmp_file(struct Table *table){
     arbitrary faddOperationsToTable;
     *(void **)(&faddOperationsToTable) = dlsym(dl_handle, "addOperationsToTable");
     faddOperationsToTable(table);
-    stop = clock();
-
-    printf("added %s:%s time: %f\n", plik1 , plik2, (((double) (stop - start)) / CLOCKS_PER_SEC));
 }
 
-void removeBlock(struct Table *table, int index){
-    clock_t start, stop;
-    start = clock();
+void remove_block(struct Table *table, int index){
     arbitrary fdeleteBlock;
-    *(void **)(&fdeleteBlock) = dlsym(dl_handle, "deleteBlock");   
+    *(void **)(&fdeleteBlock) = dlsym(dl_handle, "deleteBlock");
     fdeleteBlock(table, index);
-    stop = clock();
-    printf("removed from %d time: %f\n", index, (((double) (stop - start)) / CLOCKS_PER_SEC));
 }
 
-void removeOperation(struct Table *table, int blockIndex, int operationIndex){
+void remove_operation(struct Table *table, int blockIndex, int operationIndex){
     arbitrary fdeleteOperation;
-    *(void **)(&fdeleteOperation) = dlsym(dl_handle, "deleteOperation");  
+    *(void **)(&fdeleteOperation) = dlsym(dl_handle, "deleteOperation");
     fdeleteOperation(table, blockIndex, operationIndex);
 }
 
-void readFromCommandLine(char *argv[], int argc){
+void show_table(struct Table table){
+    arbitrary fshowAllTable;
+    *(void **)(&fshowAllTable) = dlsym(dl_handle, "showAllTable");
+    fshowAllTable(table);
+}
+
+void read_from_command_line(int argc, char *argv[]){
     struct Table table;
-    
     table.mainTableLength = 0;
     table.operationsBlockLength = NULL;
-    bool filesStream = false;
 
-    for (int i = 0; i < argc; i++){
+    for (int i = 1; i < argc; i++){
         if (strcmp(argv[i], "compare_pairs") == 0){
-            filesStream = true;
+            char *pairsSeq = "";
+            i++;
+            while (i < argc && strcmp(argv[i], "remove_block") != 0 && strcmp(argv[i], "remove_operation") != 0 && strcmp(argv[i], "save_tmp_file") != 0 && strcmp(argv[i], "show_table") != 0){
+                if (strcmp(argv[i - 1], "compare_pairs") != 0){
+                    pairsSeq = concat_(pairsSeq, " ");
+                }
+                pairsSeq = concat_(pairsSeq, argv[i]);
+                i++;
+            }
+            compare_pairs(pairsSeq);
             continue;
         }
 
         if (strcmp(argv[i], "remove_block") == 0){
-            filesStream = false;
-            removeBlock(&table, (int)(argv[i + 1][0] - '0'));
+            remove_block(&table, (int)(argv[i + 1][0] - '0'));
             i++;
             continue;
             
         }
 
         if (strcmp(argv[i], "remove_operation") == 0){
-            filesStream = false;
-            removeOperation(&table, (int)(argv[i + 1][0] - '0'), (int)(argv[i + 2][0] - '0'));
+            remove_operation(&table, (int)(argv[i + 1][0] - '0'), (int)(argv[i + 2][0] - '0'));
             i += 2;
             continue;
         }
 
-        if (filesStream){
-            addCompareToTable(&table, argv[i]);
+        if (strcmp(argv[i], "save_tmp_file") == 0){
+            save_tmp_file(&table);
+            continue;
+        }
+
+        if (strcmp(argv[i], "show_table") == 0){
+            show_table(table);
             continue;
         }
     }
-    //showAllTable(table);
 }
 
 
@@ -128,6 +103,5 @@ int main(int argc, char *argv[])
         printf("!!! %s\n", dlerror());
         return 0;
     }
-
-    readFromCommandLine(argv, argc);
+    read_from_command_line(argc, argv); 
 }

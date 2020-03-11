@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include "table.h"
 
-//connects two strings
+//connect two strings
 char *concat(const char *s1, const char *s2)
 {
     char *result = malloc(strlen(s1) + strlen(s2) + 1);
@@ -13,13 +13,37 @@ char *concat(const char *s1, const char *s2)
     return result;
 }
 
-//compares two files and saves the result to tmp.txt
+//compare two files and saves the result to tmp.txt
 void compareTwoFiles(char *fileName1, char *fileName2){
-    char *command = concat("diff ", concat(fileName1, concat(" ", concat(fileName2, " > tmp.txt"))));
+    char *command = concat("diff ", concat(fileName1, concat(" ", concat(fileName2, " >> tmp.txt"))));
     system(command);
 }
 
-//counts how many operations is in the tmp.txt file
+//file sequence pattern: "file1.txt:file2.txt file3.txt:file4.txt"
+//compare sequence of files and save them in tmp
+void compareSequence(char *sequence){
+
+    char staticSeq[strlen(sequence)];
+    for (int i = 0; i < strlen(sequence); i++){
+        staticSeq[i] = sequence[i];
+    }
+
+    char korektor[] = " :";
+    char *schowek;
+    system("rm -f tmp.txt");
+    system("touch tmp.txt");
+    schowek = strtok(staticSeq, korektor);
+    while (schowek != NULL){
+        char *file1 = schowek;
+        schowek = strtok(NULL, korektor);
+        char *file2 = schowek;
+        schowek = strtok(NULL, korektor);
+        compareTwoFiles(file1, file2);
+    }
+}
+
+
+//count how many operations is in the tmp.txt file
 int getNumberOfOperations(){
     FILE *filePoiner = fopen("tmp.txt", "r");
     if (filePoiner == NULL){
@@ -67,13 +91,7 @@ char **initializeBlockOfEditingOperations(){
     return block;
 }
 
-// struct Table {
-//     char ***mainTable;
-//     int mainTableLength;
-//     int *operationsBlockLength;
-// };
-
-
+//initialize maint table
 struct Table initializeTable(){
     struct Table table;
     table.mainTableLength = 0;
@@ -81,6 +99,7 @@ struct Table initializeTable(){
     return table;
 }
 
+//read from tmp file operations and save them in table
 int addOperationsToTable(struct Table *table){
     if  (table == NULL){
         printf("Null pointer exception\n");
@@ -106,7 +125,8 @@ int addOperationsToTable(struct Table *table){
     return length - 1;
 }
 
-int getInformationsAboutBlock(struct Table *table, int index){
+//return length of operation block
+int getLength(struct Table *table, int index){
     if  (table == NULL){
         printf("Null pointer exception\n");
         return -1;
@@ -118,6 +138,26 @@ int getInformationsAboutBlock(struct Table *table, int index){
     return table -> operationsBlockLength[index];
 }
 
+//delete operation
+void deleteOperation(struct Table *table, int mainIndex, int blockIndex){
+    if  (table == NULL){
+        printf("Null pointer exception\n");
+        return;
+    }
+    if (mainIndex > table -> mainTableLength - 1){
+        printf("index is bigger than length of table!");
+        return;
+    }
+    if (blockIndex > table -> operationsBlockLength[mainIndex] - 1){
+        printf("index is bigger than length of table!");
+        return;
+    }
+    char **blockTable = table -> mainTable[mainIndex];
+    free(blockTable[blockIndex]);
+    blockTable[blockIndex] = NULL;
+}
+
+//delete operation block
 void deleteBlock(struct Table *table, int index){
     if  (table == NULL){
         printf("Null pointer exception\n");
@@ -136,28 +176,15 @@ void deleteBlock(struct Table *table, int index){
     free(blockTable);
 }
 
-void deleteOperation(struct Table *table, int mainIndex, int blockIndex){
-    if  (table == NULL){
-        printf("Null pointer exception\n");
-        return;
-    }
-    if (mainIndex > table -> mainTableLength - 1){
-        printf("index is bigger than length of table!");
-        return;
-    }
-    if (blockIndex > table -> operationsBlockLength[mainIndex] - 1){
-        printf("index is bigger than length of table!");
-        return;
-    }
-    char **blockTable = table -> mainTable[mainIndex];
-    free(blockTable[blockIndex]);
-}
-
+//show all table
 void showAllTable(struct Table table){
     for (int i = 0; i < table.mainTableLength; i++){
+        if (table.operationsBlockLength[i] == -1){
+            continue;
+        }
         printf("Operation block %d: \n", i);
         for (int j = 0; j < table.operationsBlockLength[i]; j++){
-            if (table.mainTable[i][j] != NULL && isdigit(table.mainTable[i][j][0])){
+            if (table.mainTable[i][j] != NULL){
                 printf("   Operation %d: \n      %s", j, table.mainTable[i][j]);
             }
         }
