@@ -24,3 +24,4 @@ exec:
 
 clear:
 	rm -f *.o *.a *.so main
+	clear

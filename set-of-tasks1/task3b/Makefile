@@ -11,8 +11,11 @@ shared:
 
 
 dynamic:
-	$(CC) -fPIC -shared table.c -o libtable.so
-	$(CC) main.c -ldl -o main
+	$(CC) -c -fPIC table.c
+	$(CC) -shared -fPIC -o libtable.so table.o
+	$(CC) -o main main_dynamic.c -Wl,--no-as-needed -ldl -I .
+
+
 
 
 clear:

@@ -1,0 +1,27 @@
+-----------------static--------------------
+
+add     a.txt:b.txt     0.000038s
+remove  a.txt:b.txt     0.000002s
+
+time ./main compare_pairs a.txt:b.txt remove_block 0 compare_pairs a.txt:b.txt remove_block 1
+real    user    sys
+0.002s  0.001s  0.001s
+
+-----------------shared--------------------
+
+add     a.txt:b.txt     0.000146s
+remove  a.txt:b.txt     0.000006s
+
+time ./main compare_pairs a.txt:b.txt remove_block 0 compare_pairs a.txt:b.txt remove_block 1
+real    user    sys
+0.001s  0.002s  0.001s
+
+-----------------dynamic--------------------
+
+add     a.txt:b.txt     0.000037s
+remove  a.txt:b.txt     0.000002s
+
+time ./main compare_pairs a.txt:b.txt remove_block 0 compare_pairs a.txt:b.txt remove_block 1
+real    user    sys
+0.002s  0.002s  0.001s
+
