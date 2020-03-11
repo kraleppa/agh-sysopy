@@ -15,18 +15,39 @@ dynamic:
 	$(CC) -shared -fPIC -o libtable.so table.o
 	$(CC) -o main main_dynamic.c -Wl,--no-as-needed -ldl -I .
 
+opt0:
+	$(CC) -c table.c
+	ar crs libtable.a table.o
+	$(CC) -O main.c -o main -L. -ltable
 
+opt02:
+	$(CC) -c table.c
+	ar crs libtable.a table.o
+	$(CC) -O2 main.c -o main -L. -ltable
+
+opt03:
+	$(CC) -c table.c
+	ar crs libtable.a table.o
+	$(CC) -O2 main.c -o main -L. -ltable
+
+opt0s:
+	$(CC) -c table.c
+	ar crs libtable.a table.o
+	$(CC) -Os main.c -o main -L. -ltable
 
 
 clear:
-	rm -f *.o *.a *.so *.txt main
+	rm -f *.o *.a *.so tmp.txt main
 	clear
 
-test:
-	echo -e "aaa\nbbb ccc\nddd\neee\nhhh iii\n" > a.txt
-	echo -e "jjj kkk\naaa\nfff ccc\neee\nbbb ggg" > b.txt
-	./main compare_pairs a.txt:b.txt remove_block 0 compare_pairs a.txt:b.txt   
-	./main compare_pairs a.txt:b.txt remove_block 0 compare_pairs a.txt:b.txt remove_block 1
-	rm -f *.o *.a *.so *.txt main
+compare_test1:
+	./main compare_pairs a.txt:b.txt a.txt:b.txt a.txt:b.txt a.txt:b.txt a.txt:b.txt a.txt:b.txt
+
+compare_test2:
+	./main compare_pairs loremA.txt:loremB.txt loremA.txt:loremB.txt loremA.txt:loremB.txt loremA.txt:loremB.txt loremA.txt:loremB.txt loremA.txt:loremB.txt
+
+save_delete_test:
+	./main save_tmp_file remove_block 0 save_tmp_file remove_block 1 save_tmp_file remove_block 2 save_tmp_file remove_block 3 save_tmp_file remove_block 4 save_tmp_file remove_block 5
+
 
 

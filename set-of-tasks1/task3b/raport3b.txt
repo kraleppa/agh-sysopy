@@ -1,0 +1,90 @@
+--------opt0--------
+
+compare_test1
+real    0m0,021s
+user    0m0,013s
+sys     0m0,008s
+
+compare_test2
+real    0m0,057s
+user    0m0,028s
+sys     0m0,027s
+
+save_delete_test: 6 razy a.txt:b.txt
+real    0m0,004s
+user    0m0,004s
+sys     0m0,001s
+
+save_delete_test: 6 razy loremA.txt:loremB.txt
+real    0m0,008s
+user    0m0,005s
+sys     0m0,003s
+
+
+--------opt02-------
+
+compare_test1
+real    0m0,023s
+user    0m0,009s
+sys     0m0,014s
+
+compare_test2
+real    0m0,033s
+user    0m0,016s
+sys     0m0,010s
+
+save_delete_test: 6 razy a.txt:b.txt
+real    0m0,006s
+user    0m0,005s
+sys     0m0,002s
+
+save_delete_test: 6 razy loremA.txt:loremB.txt
+real    0m0,009s
+user    0m0,004s
+sys     0m0,004s
+
+
+--------opt03-------
+
+compare_test1
+real    0m0,021s
+user    0m0,008s
+sys     0m0,012s
+
+compare_test2
+real    0m0,029s
+user    0m0,016s
+sys     0m0,010s
+
+save_delete_test: 6 razy a.txt:b.txt
+real    0m0,006s
+user    0m0,005s
+sys     0m0,002s
+
+save_delete_test: 6 razy loremA.txt:loremB.txt
+real    0m0,006s
+user    0m0,001s
+sys     0m0,005s
+
+--------opt0s-------
+
+compare_test1
+real    0m0,034s
+user    0m0,015s
+sys     0m0,015s
+
+compare_test2
+real    0m0,050s
+user    0m0,021s
+sys     0m0,025s
+
+save_delete_test: 6 razy a.txt:b.txt
+real    0m0,011s
+user    0m0,006s
+sys     0m0,005s
+
+save_delete_test: 6 razy loremA.txt:loremB.txt
+real    0m0,010s
+user    0m0,003s
+sys     0m0,007s
+

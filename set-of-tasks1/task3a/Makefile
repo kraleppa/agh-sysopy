@@ -26,7 +26,7 @@ compare_test1:
 compare_test2:
 	./main compare_pairs loremA.txt:loremB.txt loremA.txt:loremB.txt loremA.txt:loremB.txt loremA.txt:loremB.txt loremA.txt:loremB.txt loremA.txt:loremB.txt
 
-test1:
+save_delete_test:
 	./main save_tmp_file remove_block 0 save_tmp_file remove_block 1 save_tmp_file remove_block 2 save_tmp_file remove_block 3 save_tmp_file remove_block 4 save_tmp_file remove_block 5
 
 
