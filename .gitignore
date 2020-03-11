@@ -2,4 +2,5 @@
 *.so
 *.a
 main
+tmp.txt
 Tutorial/libraries/dynamic

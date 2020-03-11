@@ -2,10 +2,10 @@
 #include "table.h"
 
 int main(){
-    struct Table tab = initializeTable(1);
-    addOperationsToTable(&tab);
-    addOperationsToTable(&tab);
-    addOperationsToTable(&tab);
-    deleteBlock(&tab, 1);
+    compareSequence("a.txt:b.txt b.txt:a.txt");
+    struct Table tab = initializeTable();
+    int x = addOperationsToTable(&tab);
     showAllTable(tab);
+    printf("%d\n", x);
+    return 0;
 }

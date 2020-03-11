@@ -15,9 +15,33 @@ char *concat(const char *s1, const char *s2)
 
 //compare two files and saves the result to tmp.txt
 void compareTwoFiles(char *fileName1, char *fileName2){
-    char *command = concat("diff ", concat(fileName1, concat(" ", concat(fileName2, " > tmp.txt"))));
+    char *command = concat("diff ", concat(fileName1, concat(" ", concat(fileName2, " >> tmp.txt"))));
     system(command);
 }
+
+//file sequence pattern: "file1.txt:file2.txt file3.txt:file4.txt"
+//compare sequence of files and save them in tmp
+void compareSequence(char *sequence){
+
+    char staticSeq[strlen(sequence)];
+    for (int i = 0; i < strlen(sequence); i++){
+        staticSeq[i] = sequence[i];
+    }
+
+    char korektor[] = " :";
+    char *schowek;
+    system("rm -f tmp.txt");
+    system("touch tmp.txt");
+    schowek = strtok(staticSeq, korektor);
+    while (schowek != NULL){
+        char *file1 = schowek;
+        schowek = strtok(NULL, korektor);
+        char *file2 = schowek;
+        schowek = strtok(NULL, korektor);
+        compareTwoFiles(file1, file2);
+    }
+}
+
 
 //count how many operations is in the tmp.txt file
 int getNumberOfOperations(){
@@ -66,12 +90,6 @@ char **initializeBlockOfEditingOperations(){
 
     return block;
 }
-
-// struct Table {
-//     char ***mainTable;
-//     int mainTableLength;
-//     int *operationsBlockLength;
-// };
 
 //initialize maint table
 struct Table initializeTable(){

@@ -6,6 +6,7 @@ struct Table {
 
 char *concat(const char *s1, const char *s2);
 void compareTwoFiles(char *fileName1, char *fileName2);
+void compareSequence(char *sequence);
 int getNumberOfOperations();
 char **initializeBlockOfEditingOperations();
 struct Table initializeTable();

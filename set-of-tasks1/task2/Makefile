@@ -7,7 +7,7 @@ compile:
 	$(CC) main.c -o main -L. -ltable
 
 clear:
-	rm -f *.o *.a *.so main
+	rm -f *.o *.a *.so tmp.txt main
 	clear
 
 exec:

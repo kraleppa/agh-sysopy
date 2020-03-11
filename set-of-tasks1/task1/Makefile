@@ -13,9 +13,8 @@ static:
 	ar crs libtable.a table.o
 	$(CC) main.c -o main -L. -ltable
 
-dynamic:
+shared:
 	make clear
-	$(CC) -c table.c
 	$(CC) -fPIC -shared table.c -o libtable.so
 	$(CC) main.c -L. -Wl,-rpath=. -ltable -o main
 
@@ -23,5 +22,5 @@ exec:
 	./main
 
 clear:
-	rm -f *.o *.a *.so main
+	rm -f *.o *.a *.so tmp.txt main
 	clear
