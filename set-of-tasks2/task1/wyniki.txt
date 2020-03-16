@@ -77,3 +77,43 @@ time ./main sort dane 17000 1024 lib
 real    0m1,623s
 user    0m0,678s
 sys     0m0,939s
+
+time ./main sort dane 10000 4096 sys
+real    0m1,139s
+user    0m0,369s
+sys     0m0,768s
+
+time ./main sort dane 10000 4096 lib
+real    0m1,431s
+user    0m0,489s
+sys     0m0,939s
+
+time ./main sort dane 17000 4096 sys
+real    0m2,057s
+user    0m0,661s
+sys     0m1,387s
+
+time ./main sort dane 17000 4096 lib
+real    0m2,651s
+user    0m0,930s
+sys     0m1,716s
+
+time ./main sort dane 10000 8192 sys
+real    0m2,041s
+user    0m0,601s
+sys     0m1,435s
+
+time ./main sort dane 10000 8192 lib
+real    0m2,350s
+user    0m0,714s
+sys     0m1,632s
+
+time ./main sort dane 17000 8192 sys
+real    0m4,092s
+user    0m0,999s
+sys     0m2,921s
+
+time ./main sort dane 17000 8192 lib
+real    0m4,450s
+user    0m1,224s
+sys     0m3,045s
