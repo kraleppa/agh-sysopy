@@ -27,13 +27,13 @@ char *generateWord(int length){
 }
 
 //generate 'number' words and save them to dane.txt
-void generateWords(int number, int length){
-    system("rm -f dane.txt");
-    system("touch dane.txt");
+void generateWords(char *fileName, int number, int length){
+    char *command = concat("touch ", fileName);
+    system(command);
 
     for (int i = 0; i < number; i++){
         char *word = generateWord(length);
-        char *command = concat("echo ", concat(word, " >> dane.txt"));
+        char *command = concat("echo ", concat(word, concat(" >> ",fileName)));
         system(command);
     }
 }
@@ -100,7 +100,7 @@ void quickSortSys(int fileDescriptor, int lengthOfRecord, int left, int right){
     }
 }
 
-void sortSys(char *fileName, int lengthOfRecord, int numberOfRecords){
+void sort_sys(char *fileName, int lengthOfRecord, int numberOfRecords){
     int fileDescriptor = open(fileName, O_RDWR);
     if (fileDescriptor < 0){
         perror("file does not exist");
@@ -111,7 +111,7 @@ void sortSys(char *fileName, int lengthOfRecord, int numberOfRecords){
 }
 
 //system copy
-void copySys(char *fileName1, char *fileName2, int lengthOfRecord, int numberOfRecords){
+void copy_sys(char *fileName1, char *fileName2, int lengthOfRecord, int numberOfRecords){
     int fileDescriptor1 = open(fileName1, O_RDONLY);
     if (fileDescriptor1 < 0){
         perror("file does not exist");
@@ -176,7 +176,7 @@ void quickSortLib(FILE *file, int lengthOfRecord, int left, int right){
     }
 }
 
-void sortLib(char *fileName, int lengthOfRecord, int numberOfRecord){
+void sort_lib(char *fileName, int lengthOfRecord, int numberOfRecord){
     FILE *file = fopen(fileName, "r+");
     if (file == NULL){
         perror("file does not exist");
@@ -187,7 +187,7 @@ void sortLib(char *fileName, int lengthOfRecord, int numberOfRecord){
 }
 
 //library copy
-void copyLib(char *fileName1, char *fileName2, int lengthOfRecord, int numberOfRecords){
+void copy_lib(char *fileName1, char *fileName2, int lengthOfRecord, int numberOfRecords){
     FILE *file1 = fopen(fileName1, "r");
     if (file1 == NULL){
         perror("file does not exist");
@@ -209,10 +209,48 @@ void copyLib(char *fileName1, char *fileName2, int lengthOfRecord, int numberOfR
     fclose(file2);
 }
 
+void read_from_command_line(int argc, char *argv[]){
+    if (strcmp(argv[1], "generate") == 0){
+        char *fileName = argv[2];
+        int numberOfRecords = atoi(argv[3]);
+        int lengthOfRecord = atoi(argv[4]);
+        generateWords(fileName, numberOfRecords, lengthOfRecord);
+        return;
+    }
+
+    if (strcmp(argv[1], "sort") == 0){
+        char *fileName = argv[2];
+        int numberOfRecords = atoi(argv[3]);
+        int lengthOfRecord = atoi(argv[4]);
+        if (strcmp(argv[5], "sys") == 0){
+            sort_sys(fileName, lengthOfRecord, numberOfRecords);
+            return;
+        }
+        if (strcmp(argv[5], "lib") == 0){
+            sort_lib(fileName, lengthOfRecord, numberOfRecords);
+            return;
+        }
+    }
+
+    if (strcmp(argv[1], "copy") == 0){
+        char *fileName1 = argv[2];
+        char *fileName2 = argv[3];
+        int numberOfRecords = atoi(argv[4]);
+        int lengthOfRecord = atoi(argv[5]);
+        if (strcmp(argv[6], "sys") == 0){
+            copy_sys(fileName1, fileName2, lengthOfRecord, numberOfRecords);
+            return;
+        }
+
+        if (strcmp(argv[6], "lib") == 0){
+            copy_lib(fileName1, fileName2, lengthOfRecord, numberOfRecords);
+            return;
+        }
+    }
+}
 
 
-int main(){
-    int lengthOfRecords = 10;
-    generateWords(10, lengthOfRecords);
-    copyLib("dane.txt", "copy.txt", lengthOfRecords, 10);
+
+int main(int argc, char *argv[]){
+    read_from_command_line(argc, argv);
 }

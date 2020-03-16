@@ -10,7 +10,7 @@ exec:
 
 clear:
 	clear
-	rm -f main dane.txt
+	rm -f main dane.txt dane
 
 show:
 	cat dane.txt
