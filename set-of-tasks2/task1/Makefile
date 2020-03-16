@@ -14,3 +14,7 @@ clear:
 
 show:
 	cat dane.txt
+
+copyy:
+	rm -f copy
+	touch copy

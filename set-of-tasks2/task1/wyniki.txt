@@ -117,3 +117,45 @@ time ./main sort dane 17000 8192 lib
 real    0m4,450s
 user    0m1,224s
 sys     0m3,045s
+
+
+
+time ./main copy dane copy 70000 1 sys
+real    0m0,130s
+user    0m0,028s
+sys     0m0,102s
+
+time ./main copy dane copy 70000 1 lib
+real    0m0,005s
+user    0m0,002s
+sys     0m0,003s
+
+time ./main copy dane copy 100000 1 sys
+real    0m0,184s
+user    0m0,043s
+sys     0m0,141s
+
+time ./main copy dane copy 100000 1 lib
+real    0m0,007s
+user    0m0,007s
+sys     0m0,001s
+
+time ./main copy dane copy 50000 4 sys
+real    0m0,094s
+user    0m0,026s
+sys     0m0,068s
+
+time ./main copy dane copy 50000 4 lib
+real    0m0,006s
+user    0m0,003s
+sys     0m0,003s
+
+time ./main copy dane copy 100000 4 sys
+real    0m0,181s
+user    0m0,051s
+sys     0m0,130s
+
+time ./main copy dane copy 100000 4 lib
+real    0m0,015s
+user    0m0,011s
+sys     0m0,004s
