@@ -14,6 +14,40 @@ char *concat(const char *s1, const char *s2)
     return result;
 }
 
+void printFile(char *path, struct stat statFile){
+    char *fileType;
+
+    if (S_ISREG(statFile.st_mode)){
+        fileType = "file";
+    } else if (S_ISDIR(statFile.st_mode)){
+        fileType = "dir";
+    } else if (S_ISCHR(statFile.st_mode)){
+        fileType = "char";
+    } else if (S_ISBLK(statFile.st_mode)){
+        fileType = "block dev";
+    } else if (S_ISFIFO(statFile.st_mode)){
+        fileType = "fifo";
+    } else if (S_ISLNK(statFile.st_mode)){
+        fileType = "slink";
+    } else if (S_ISSOCK(statFile.st_mode)){
+        fileType = "socket";
+    }
+
+    time_t tm = statFile.st_mtime;
+    struct tm ltm;
+    localtime_r(&tm, &ltm);
+    char modtime[80];
+    strftime(modtime, sizeof(modtime), "%c", &ltm);
+
+    time_t ta = statFile.st_atime;
+    struct tm lta;
+    localtime_r(&ta, &lta);
+    char accestime[80];
+    strftime(accestime, sizeof(accestime), "%c", &lta);
+    
+    printf("path: %s | links: %ld | file type: %s | file size: %ld | mod time: %s | acces time %s\n",
+        path, statFile.st_nlink, fileType, statFile.st_size, modtime, accestime);
+}
 
 void max_depth(char *path, int depth){
     if (depth == 0){
@@ -44,11 +78,12 @@ void max_depth(char *path, int depth){
                 max_depth(newPath, depth - 1);
             }
         }
-        printf("%s\n", newPath);
+        if (strcmp(file -> d_name, ".") != 0 && strcmp(file -> d_name, "..") != 0)
+            printFile(newPath, statFile);
     }
     closedir(dir);
 }
 
 int main(){
-    max_depth("directory/lvl1", 3);
+    max_depth("/home/krzysztof/Coding/Sysopy/set-of-tasks2/task2/directory", 3);
 }
