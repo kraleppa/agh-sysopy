@@ -125,16 +125,87 @@ void mtime(char *path, char sign, int depth, time_t date){
     closedir(dir);
 }
 
+void atime(char *path, char sign, int depth, time_t date){
+    if (depth == 0){
+        return;
+    }
 
-int main(){
-    // time_t rawtime;
-    // struct tm *timeinfo;
+    if (path == NULL){
+        return;
+    }
 
-    // time(&rawtime);
-    // timeinfo = localtime(&rawtime);
-    // timeinfo->tm_mday -= 1;
-    time_t t = time(NULL);
-    struct tm tm = *localtime(&t);
-    tm.tm_mday -= 1;
-    mtime("/home/krzysztof/Coding/Sysopy", '+', 1, mktime(&tm));
+    DIR *dir = opendir(path);
+
+    if (dir == NULL){
+        perror("directory does not exist");
+        exit(-1);
+    }
+
+    struct dirent *file;
+
+    while ((file = readdir(dir)) != NULL){
+        char *newPath;
+        newPath = concat("", concat(path, concat("/", file -> d_name)));
+        struct stat statFile;
+        lstat(newPath, &statFile);
+
+        if (S_ISDIR(statFile.st_mode)){
+            if (strcmp(file -> d_name, ".") != 0 && strcmp(file -> d_name, "..") != 0){
+                atime(newPath, sign, depth - 1, date);
+            }
+        }
+
+        time_t atime = statFile.st_atime;
+        int diff = difftime(date, atime);
+
+        if ((sign == '-' && diff <= 0) || (sign == '+' && diff >= 0)){
+            if (strcmp(file -> d_name, ".") != 0 && strcmp(file -> d_name, "..") != 0)
+            printFile(newPath, statFile);
+        } 
+    }
+    closedir(dir);
 }
+
+void read_from_command_line(int argc, char *argv[]){
+    if (strcmp(argv[3], "-maxdepth") == 0){
+        max_depth(argv[2], atoi(argv[4]));
+        return;
+    }
+
+    if (strcmp(argv[3], "-mtime") == 0){
+        time_t t = time(NULL);
+        struct tm tm = *localtime(&t);
+        tm.tm_mday -= atoi(argv[5]);
+        if (argc > 6){
+            if (strcmp(argv[6], "-maxdepth") == 0){
+                mtime(argv[2], argv[4][0], atoi(argv[7]), mktime(&tm));
+            }
+        }else{
+            mtime(argv[2], argv[4][0], -1, mktime(&tm));
+        }
+        return;
+    }
+
+    if (strcmp(argv[3], "-atime") == 0){
+        time_t t = time(NULL);
+        struct tm tm = *localtime(&t);
+        tm.tm_mday -= atoi(argv[5]);
+        if (argc > 6){
+            if (strcmp(argv[6], "-maxdepth") == 0){
+                atime(argv[2], argv[4][0], atoi(argv[7]), mktime(&tm));
+            }
+        }else{
+            atime(argv[2], argv[4][0], -1, mktime(&tm));
+        }
+        return;
+    }
+}
+
+
+int main(int argc, char *argv[]){
+    read_from_command_line(argc, argv);
+}
+
+//./main find /home/krzysztof/Coding/Sysopy/set-of-tasks2/task2/directory -maxdepth 3
+//./main find /home/krzysztof/Coding/Sysopy -mtime + 3 -maxdepth 1
+//./main find /home/krzysztof/Coding/Sysopy -atime + 3 -maxdepth 1
