@@ -51,7 +51,7 @@ char sign;
 time_t date;
 
 int fn(const char *fpath, const struct stat *sb, int typeflag, struct FTW *ftwbuf){
-    if (maxdepth != -1 && ftwbuf -> level > maxdepth){
+    if (ftwbuf -> level > maxdepth){
         return 0;
     }
 
@@ -83,13 +83,32 @@ int fn(const char *fpath, const struct stat *sb, int typeflag, struct FTW *ftwbu
     return 0;
 }
 
-int main(){
-    maxdepth = 1;
-    command = "-maxdepth";
-    sign = '+';
-    time_t t = time(NULL);
-    struct tm tm = *localtime(&t);
-    tm.tm_mday -= 2;
-    date = mktime(&tm);
-    nftw("/home/krzysztof/Coding/Sysopy/set-of-tasks2/task2/directory", fn, FTW_D, FTW_PHYS);
+//./main find /home/krzysztof/Coding/Sysopy/set-of-tasks2/task2/directory -maxdepth 3
+//./main find /home/krzysztof/Coding/Sysopy -mtime + 3 -maxdepth 1
+//./main find /home/krzysztof/Coding/Sysopy -atime + 3 -maxdepth 1
+void read_from_command_line(int argc, char *argv[]){
+    char *path = argv[2];
+    command = argv[3];
+
+    if (strcmp(command, "-maxdepth") == 0){
+        maxdepth = atoi(argv[4]);
+        
+    } else if (strcmp(command, "-mtime") == 0 || strcmp(command, "-atime") == 0){
+        sign = argv[4][0];
+        time_t t = time(NULL);
+        struct tm tm = *localtime(&t);
+        tm.tm_mday -= atoi(argv[5]);
+        date = mktime(&tm);
+        if (argc > 6){
+            maxdepth = atoi(argv[7]);
+        } else {
+            maxdepth = -1;
+        }
+    }
+    nftw(path, fn, FTW_D, FTW_PHYS);
+}
+
+
+int main(int argc, char *argv[]){
+    read_from_command_line(argc, argv);
 }
