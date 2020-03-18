@@ -18,6 +18,3 @@ show:
 copyy:
 	rm -f copy
 	touch copy
-	rm -f dane
-	./main generate dane 50000 8192
-	
