@@ -84,6 +84,57 @@ void max_depth(char *path, int depth){
     closedir(dir);
 }
 
+void mtime(char *path, char sign, int depth, time_t date){
+    if (depth == 0){
+        return;
+    }
+
+    if (path == NULL){
+        return;
+    }
+
+    DIR *dir = opendir(path);
+
+    if (dir == NULL){
+        perror("directory does not exist");
+        exit(-1);
+    }
+
+    struct dirent *file;
+
+    while ((file = readdir(dir)) != NULL){
+        char *newPath;
+        newPath = concat("", concat(path, concat("/", file -> d_name)));
+        struct stat statFile;
+        lstat(newPath, &statFile);
+
+        if (S_ISDIR(statFile.st_mode)){
+            if (strcmp(file -> d_name, ".") != 0 && strcmp(file -> d_name, "..") != 0){
+                mtime(newPath, sign, depth - 1, date);
+            }
+        }
+
+        time_t modtime = statFile.st_mtime;
+        int diff = difftime(date, modtime);
+
+        if ((sign == '-' && diff <= 0) || (sign == '+' && diff >= 0)){
+            if (strcmp(file -> d_name, ".") != 0 && strcmp(file -> d_name, "..") != 0)
+            printFile(newPath, statFile);
+        } 
+    }
+    closedir(dir);
+}
+
+
 int main(){
-    max_depth("/home/krzysztof/Coding/Sysopy/set-of-tasks2/task2/directory", 3);
+    // time_t rawtime;
+    // struct tm *timeinfo;
+
+    // time(&rawtime);
+    // timeinfo = localtime(&rawtime);
+    // timeinfo->tm_mday -= 1;
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    tm.tm_mday -= 1;
+    mtime("/home/krzysztof/Coding/Sysopy", '+', 1, mktime(&tm));
 }
