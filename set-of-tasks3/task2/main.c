@@ -1,9 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
-#define MAX_COLumnS_NUMBER 1000
-#define MAX_LINE_LENGTH (MAX_COLumnS_NUMBER * 5)
+#define MAX_COLUMNS_NUMBER 1000
+#define MAX_LINE_LENGTH (MAX_COLUMNS_NUMBER * 5)
+
+int pair_number = 0;
+
+struct Task{
+    int pairIndex;
+    int columnIndex;
+};
+
+struct Task getTask(){
+    struct Task task;
+    task.columnIndex = -1;
+    task.pairIndex = -1;
+
+    for (int i = 0; i < pair_number; i++){
+        ;
+    }
+}
 
 
 typedef struct {
@@ -93,10 +111,67 @@ void printMatrix(Matrix *matrix){
     }
 }
 
+
+
+void columnProduce(char *path1, char *path2, int columnIndex, int pairIndex){
+    Matrix *matrix1 = initMatrix(path1);
+    Matrix *matrix2 = initMatrix(path2);
+    char *fileName = calloc(20, sizeof(char));
+
+    sprintf(fileName, "tmp/part%d%04d", pairIndex, columnIndex);
+    FILE *partFile  = fopen(fileName, "w+");
+
+    for (int j = 0; j < matrix1 -> rows; j++){
+        int result = 0;
+
+        for (int i = 0; i < matrix1 -> columns; i++){
+            result += matrix1 -> values[j][i] * matrix2 -> values[i][columnIndex];
+        }
+
+        if (j == matrix1 -> rows - 1){
+            fprintf(partFile,"%d ", result);
+        } else {
+            fprintf(partFile, "%d \n",  result);
+        }
+    }
+    free(matrix1);
+    free(matrix2);
+    fclose(partFile);
+}
+
+int process(char **a, char **b, int timeout, int mode, char **result){
+    time_t startTime = time(NULL);
+
+    int count = 0;
+
+    while (1){
+        if ((time(NULL) - startTime) >= timeout){
+            break;
+        }
+
+        struct Task task;
+        task.columnIndex = 0;
+        task.pairIndex = 0;
+
+        if (task.columnIndex == -1){
+            break;
+        }
+
+        if (mode == 1){
+            //todo
+            ;
+        } else {
+            columnProduce(a[task.pairIndex], b[task.pairIndex], task.columnIndex, task.pairIndex);
+            break;
+        }
+
+        count++;
+    }
+    return count;
+}
+
+
 int main(){
-    Matrix *matrix = initMatrix("matrix");
-    
-    printMatrix(matrix);
-    deleteMatrix(matrix);
+    columnProduce("matrix", "matrix", 0, 0);
     return 0;
 }
