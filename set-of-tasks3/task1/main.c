@@ -23,8 +23,7 @@ int display_info(const char *path, const struct stat *sb, int flagType, struct F
             printf("\n");
         }
         exit(0);
-    }
-    else{
+    }else{
         wait(NULL);
     }
     return 0;
