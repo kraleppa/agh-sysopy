@@ -27,7 +27,6 @@ int display_info(const char *path, const struct stat *sb, int flagType, struct F
     else{
         wait(NULL);
     }
-    free(absPath);
     return 0;
 }
 
