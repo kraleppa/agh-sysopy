@@ -1,12 +1,19 @@
+ 
+#define _XOPEN_SOURCE 500
+#include <linux/limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/file.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 #include <time.h>
+#include <unistd.h>
+
 
 #define MAX_COLUMNS_NUMBER 1000
 #define MAX_LINE_LENGTH (MAX_COLUMNS_NUMBER * 5)
-#define PATH_MAX 100
-
 int pair_number = 0;
 
 struct Task{
@@ -130,39 +137,79 @@ void columnProduce(char *path1, char *path2, int columnIndex, int pairIndex){
     fclose(partFile);
 }
 
-int process(char **a, char **b, int timeout, int mode, char **result){
-    time_t startTime = time(NULL);
 
-    int count = 0;
+struct Task getTask() {
+    struct Task task;
+    task.columnIndex = -1;
+    task.pairIndex = -1;
+    for (int i = 0; i < pair_number; i++){
+        char* task_filename = calloc(100, sizeof(char));
+        sprintf(task_filename, "tmp/tasks%d", i);
+        FILE* tasks_file = fopen(task_filename, "r+");
+        int fd = fileno(tasks_file);
+        flock(fd, LOCK_EX);
 
-    while (1){
-        if ((time(NULL) - startTime) >= timeout){
+        char* tasks = calloc(1000, sizeof(char));
+        fseek(tasks_file, 0, SEEK_SET);
+        fread(tasks, 1, 1000, tasks_file);
+
+        char* task_first_zero = strchr(tasks, '0');
+        int task_index = task_first_zero != NULL ? task_first_zero - tasks : -1;
+
+        if (task_index >= 0) {
+            char* end_of_line = strchr(tasks, '\0');
+            int size = end_of_line - tasks;
+
+            char* tasks_with_good_size = calloc(size +1, sizeof(char));
+            for(int j=0; j<size; j++){
+                tasks_with_good_size[j] = tasks[j];
+            }
+            tasks_with_good_size[task_index] = '1';
+            fseek(tasks_file, 0, SEEK_SET);
+            fwrite(tasks_with_good_size, 1, size, tasks_file);
+            task.pairIndex = i;
+            task.columnIndex = task_index;
+            flock(fd, LOCK_UN);
+            fclose(tasks_file);
             break;
         }
+        flock(fd, LOCK_UN);
+        fclose(tasks_file);
+    }
+    return task;
+}
 
-        struct Task task;
-        task.columnIndex = 0;
-        task.pairIndex = 0;
-
+int process(char **filesA, char **filesB, int timeout, int mode, char **result){
+    time_t start = time(NULL);
+    int count = 0;
+    printf("mode: %d\n", mode);
+    while (1 == 1){
+        
+        if ((time(NULL) - start) >= timeout){
+            break;
+        }
+        
+        struct Task task = getTask();
+        
         if (task.columnIndex == -1){
             break;
         }
-
         if (mode == 1){
             //todo
             ;
-        } else {
-            columnProduce(a[task.pairIndex], b[task.pairIndex], task.columnIndex, task.pairIndex);
-            break;
+        }else{
+            columnProduce(filesA[task.pairIndex], filesB[task.pairIndex], task.columnIndex, task.pairIndex);
         }
-
         count++;
     }
     return count;
 }
 
-void read_from_command_line(int argc, char *argv[]){
-    if (argc != 5){
+
+
+
+int main(int argc, char* argv[]){
+        if (argc != 5){
         perror("syntax error");
     }
 
@@ -202,7 +249,6 @@ void read_from_command_line(int argc, char *argv[]){
         
 
         FILE *taskFile = fopen(taskFileChar, "w+");
-
         char *tasks = calloc(b -> columns + 1, sizeof(char));
         sprintf(tasks, "%0*d", b -> columns, 0);
         fwrite(tasks, 1, b -> columns, taskFile);
@@ -214,10 +260,24 @@ void read_from_command_line(int argc, char *argv[]){
         pairCount++;
     }
     pair_number = pairCount;
-}
 
+    pid_t *processes = calloc(numberOfProcess, sizeof(int));
 
-int main(int argc, char* argv[]){
-    read_from_command_line(argc, argv);
+    for (int i = 0; i < numberOfProcess; i++){
+        pid_t worker = fork();
+        if (worker == 0){
+            return process(filesA, filesB, timeout, mode, filesC);
+        } else {
+            processes[i] = worker;
+        }
+    }
+
+    for (int i = 0; i < numberOfProcess; i++){
+        int status;
+        waitpid(processes[i], &status, 0);
+        printf("PID: %d      Ilosc mnozen: %d\n", processes[i], WEXITSTATUS(status));
+    }
+    free(processes);
+
     return 0;
 }
