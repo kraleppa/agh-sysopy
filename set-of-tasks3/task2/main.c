@@ -137,6 +137,41 @@ void columnProduce(char *path1, char *path2, int columnIndex, int pairIndex){
     fclose(partFile);
 }
 
+void write_matrix_to_file(FILE *file, Matrix a){
+    fseek(file, 0, SEEK_SET);
+    for (int y = 0; y < a.rows; y++) {
+        for (int x = 0; x < a.columns; x++) {
+            if (x > 0) {
+                fprintf(file, " ");
+            }
+            fprintf(file, "%d", a.values[y][x]);
+        };
+        fprintf(file, "\n");
+    }
+}
+
+void oneFileProduce(char *path1, char *path2, int columnIndex, char *resultFile){
+    Matrix *matrix1 = initMatrix(path1);
+    Matrix *matrix2 = initMatrix(path2);
+
+    FILE *file = fopen(resultFile, "r+");
+    int fd = fileno(file);
+    flock(fd, LOCK_EX);
+    Matrix *matrix3 = initMatrix(resultFile);
+
+    for (int j = 0; j < matrix1 -> rows; j++){
+        int result = 0;
+        for (int i = 0; i < matrix1 -> columns; i++){
+            result += matrix1 -> values[j][i] * matrix2 -> values[i][columnIndex];
+        }
+        matrix3 -> values[j][columnIndex] = result;
+    }
+
+    write_matrix_to_file(file, *matrix3);
+    flock(fd, LOCK_UN);
+    fclose(file);
+}
+
 
 struct Task getTask() {
     struct Task task;
@@ -182,7 +217,6 @@ struct Task getTask() {
 int process(char **filesA, char **filesB, int timeout, int mode, char **result){
     time_t start = time(NULL);
     int count = 0;
-    printf("mode: %d\n", mode);
     while (1 == 1){
         
         if ((time(NULL) - start) >= timeout){
@@ -195,8 +229,7 @@ int process(char **filesA, char **filesB, int timeout, int mode, char **result){
             break;
         }
         if (mode == 1){
-            //todo
-            ;
+            oneFileProduce(filesA[task.pairIndex], filesB[task.pairIndex], task.columnIndex, result[task.pairIndex]);
         }else{
             columnProduce(filesA[task.pairIndex], filesB[task.pairIndex], task.columnIndex, task.pairIndex);
         }
@@ -205,8 +238,31 @@ int process(char **filesA, char **filesB, int timeout, int mode, char **result){
     return count;
 }
 
+void generate_matrix(int rows, int cols, char* filename) {
+    printf(filename);
+    FILE* file = fopen(filename, "w+");
+   
+    for (int y = 0; y < rows; y++) {
+        for (int x = 0; x < cols; x++) {
+            if (x > 0) {
+                fprintf(file, " ");
+            }
+            
+            fprintf(file, "%d", 0);
+            
+        };
+        fprintf(file, "\n");
+    }
+    fclose(file);
+}
 
-
+char *concat(const char *s1, const char *s2)
+{
+    char *result = malloc(strlen(s1) + strlen(s2) + 1);
+    strcpy(result, s1);
+    strcat(result, s2);
+    return result;
+}
 
 int main(int argc, char* argv[]){
         if (argc != 5){
@@ -240,8 +296,7 @@ int main(int argc, char* argv[]){
         Matrix *a = initMatrix(filesA[pairCount]);
         Matrix *b = initMatrix(filesB[pairCount]);
         if (mode == 1){
-            //todo
-            ;
+            generate_matrix(a -> rows, b -> columns, filesC[pairCount]);
         }
 
         char *taskFileChar = calloc(100, sizeof(char));
