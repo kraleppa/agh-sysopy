@@ -5,6 +5,7 @@
 
 #define MAX_COLUMNS_NUMBER 1000
 #define MAX_LINE_LENGTH (MAX_COLUMNS_NUMBER * 5)
+#define PATH_MAX 100
 
 int pair_number = 0;
 
@@ -12,16 +13,6 @@ struct Task{
     int pairIndex;
     int columnIndex;
 };
-
-struct Task getTask(){
-    struct Task task;
-    task.columnIndex = -1;
-    task.pairIndex = -1;
-
-    for (int i = 0; i < pair_number; i++){
-        ;
-    }
-}
 
 
 typedef struct {
@@ -170,8 +161,63 @@ int process(char **a, char **b, int timeout, int mode, char **result){
     return count;
 }
 
+void read_from_command_line(int argc, char *argv[]){
+    if (argc != 5){
+        perror("syntax error");
+    }
 
-int main(){
-    columnProduce("matrix", "matrix", 0, 0);
+    int numberOfProcess = atoi(argv[2]);
+    int timeout = atoi(argv[3]);
+    int mode = atoi(argv[4]);
+
+    system("rm -rf tmp");
+    system("mkdir tmp");
+
+    char **filesA = calloc(100, sizeof(char*));
+    char **filesB = calloc(100, sizeof(char*));
+    char **filesC = calloc(100, sizeof(char*));
+
+    FILE *lista = fopen(argv[1], "r");
+    char line[PATH_MAX * 3 + 3];
+    
+    int pairCount = 0;
+
+    while (fgets(line, PATH_MAX * 3 + 3, lista) != NULL){
+        filesA[pairCount] = calloc(PATH_MAX, sizeof(char));
+        filesB[pairCount] = calloc(PATH_MAX, sizeof(char));
+        filesC[pairCount] = calloc(PATH_MAX, sizeof(char));
+        
+        strcpy(filesA[pairCount], strtok(line, " "));
+        strcpy(filesB[pairCount], strtok(NULL, " "));
+        strcpy(filesC[pairCount], strtok(NULL, " "));
+        Matrix *a = initMatrix(filesA[pairCount]);
+        Matrix *b = initMatrix(filesB[pairCount]);
+        if (mode == 1){
+            //todo
+            ;
+        }
+
+        char *taskFileChar = calloc(100, sizeof(char));
+        sprintf(taskFileChar, "tmp/tasks%d", pairCount);
+        
+
+        FILE *taskFile = fopen(taskFileChar, "w+");
+
+        char *tasks = calloc(b -> columns + 1, sizeof(char));
+        sprintf(tasks, "%0*d", b -> columns, 0);
+        fwrite(tasks, 1, b -> columns, taskFile);
+
+        free(tasks);
+        free(taskFileChar);
+        fclose(taskFile);
+
+        pairCount++;
+    }
+    pair_number = pairCount;
+}
+
+
+int main(int argc, char* argv[]){
+    read_from_command_line(argc, argv);
     return 0;
 }
