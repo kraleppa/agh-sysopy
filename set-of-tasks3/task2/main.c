@@ -239,7 +239,6 @@ int process(char **filesA, char **filesB, int timeout, int mode, char **result){
 }
 
 void generate_matrix(int rows, int cols, char* filename) {
-    printf(filename);
     FILE* file = fopen(filename, "w+");
    
     for (int y = 0; y < rows; y++) {

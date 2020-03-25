@@ -15,6 +15,6 @@ clear:
 show:
 	cat dane.txt
 
-copyy:
-	rm -f copy
-	touch copy
+testc:
+	clear
+	$(CC) test.c -o test
