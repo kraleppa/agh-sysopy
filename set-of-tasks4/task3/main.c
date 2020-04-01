@@ -20,7 +20,7 @@ void segfault_handle(int sig_no, siginfo_t *info, void *context){
 }
 
 void user_handle(int sig_no, siginfo_t *info, void *context){
-    printf("%d", info -> si_value.sival_int);
+    printf("%d\n", info -> si_value.sival_int);
     exit(0);
 }
 
