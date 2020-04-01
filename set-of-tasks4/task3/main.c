@@ -15,12 +15,12 @@ void child_handle(int sig_no, siginfo_t *info, void *context) {
 }
 
 void segfault_handle(int sig_no, siginfo_t *info, void *context){
-    printf("Address of faluting memory: %p\n", info -> si_addr);
+    printf("Address of faulting memory: %p\n", info -> si_addr);
     exit(0);
 }
 
 void user_handle(int sig_no, siginfo_t *info, void *context){
-    printf("%d", info->si_value.sival_int);
+    printf("%d", info -> si_value.sival_int);
     exit(0);
 }
 
