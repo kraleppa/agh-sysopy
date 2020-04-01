@@ -1,0 +1,60 @@
+Dziedziczenie po wykonaniu fork:
+
+
+handle: dziedziczy
+
+[krzysztof@localhost task2]$ ./main handler
+inside parent: 
+Odebrano SIGUSER
+inside child: 
+Odebrano SIGUSER
+
+ignore: dziedziczy
+
+[krzysztof@localhost task2]$ ./main ignore
+inside parent: 
+inside child: 
+
+mask: dziedziczy
+
+[krzysztof@localhost task2]$ ./main mask
+inside parent: 
+SIGUSR1 is pending
+inside child: 
+SIGUSR1 is pending
+
+pending: nie dziedziczy
+
+[krzysztof@localhost task2]$ ./main pending
+inside parent: 
+SIGUSR1 is pending
+inside child: 
+
+
+Dziedziczenie po wykonaniu exec
+
+
+ignore: dziedziczy
+
+[krzysztof@localhost task2]$ ./main ignore exec
+inside parent: 
+inside e-child: 
+
+mask: dziedziczy
+
+[krzysztof@localhost task2]$ ./main mask exec
+inside parent: 
+SIGUSR1 is pending
+inside e-child: 
+SIGUSR1 is pending
+
+pending: dziedziczy
+
+[krzysztof@localhost task2]$ ./main pending exec
+inside parent: 
+SIGUSR1 is pending
+inside e-child: 
+SIGUSR1 is pending
+
+
+
