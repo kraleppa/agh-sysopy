@@ -1,0 +1,241 @@
+time ./main sort dane 10000 1 sys
+real    0m11,353s
+user    0m4,589s
+sys     0m6,596s
+
+time ./main sort dane 10000 1 lib
+real    0m12,721s
+user    0m5,717s
+sys     0m6,947s
+
+time ./main sort dane 17000 1 sys
+real    0m32,073s
+user    0m13,242s
+sys     0m18,577s
+
+time ./main sort dane 17000 1 lib
+real    0m35,835s
+user    0m15,939s
+sys     0m19,539s
+
+time ./main sort dane 10000 4 sys
+real    0m0,464s
+user    0m0,231s
+sys     0m0,232s
+
+time ./main sort dane 10000 4 lib
+real    0m0,516s
+user    0m0,260s
+sys     0m0,255s
+
+time ./main sort dane 17000 4 sys
+real    0m0,898s
+user    0m0,442s
+sys     0m0,455s
+
+time ./main sort dane 17000 4 lib
+real    0m0,993s
+user    0m0,511s
+sys     0m0,481s
+
+time ./main sort dane 10000 512 sys
+real    0m0,535s
+user    0m0,231s
+sys     0m0,304s
+
+time ./main sort dane 10000 512 lib
+real    0m0,675s
+user    0m0,321s
+sys     0m0,353s
+
+time ./main sort dane 17000 512 sys
+real    0m1,043s
+user    0m0,457s
+sys     0m0,583s
+
+time ./main sort dane 17000 512 lib
+real    0m1,321s
+user    0m0,638s
+sys     0m0,682s
+
+time ./main sort dane 10000 1024 sys
+real    0m0,628s
+user    0m0,267s
+sys     0m0,360s
+
+time ./main sort dane 10000 1024 lib
+real    0m0,793s
+user    0m0,369s
+sys     0m0,422s
+
+time ./main sort dane 17000 1024 sys
+real    0m1,261s
+user    0m0,492s
+sys     0m0,767s
+
+time ./main sort dane 17000 1024 lib
+real    0m1,623s
+user    0m0,678s
+sys     0m0,939s
+
+time ./main sort dane 10000 4096 sys
+real    0m1,139s
+user    0m0,369s
+sys     0m0,768s
+
+time ./main sort dane 10000 4096 lib
+real    0m1,431s
+user    0m0,489s
+sys     0m0,939s
+
+time ./main sort dane 17000 4096 sys
+real    0m2,057s
+user    0m0,661s
+sys     0m1,387s
+
+time ./main sort dane 17000 4096 lib
+real    0m2,651s
+user    0m0,930s
+sys     0m1,716s
+
+time ./main sort dane 10000 8192 sys
+real    0m2,041s
+user    0m0,601s
+sys     0m1,435s
+
+time ./main sort dane 10000 8192 lib
+real    0m2,350s
+user    0m0,714s
+sys     0m1,632s
+
+time ./main sort dane 17000 8192 sys
+real    0m4,092s
+user    0m0,999s
+sys     0m2,921s
+
+time ./main sort dane 17000 8192 lib
+real    0m4,450s
+user    0m1,224s
+sys     0m3,045s
+
+
+
+time ./main copy dane copy 70000 1 sys
+real    0m0,130s
+user    0m0,028s
+sys     0m0,102s
+
+time ./main copy dane copy 70000 1 lib
+real    0m0,005s
+user    0m0,002s
+sys     0m0,003s
+
+time ./main copy dane copy 100000 1 sys
+real    0m0,184s
+user    0m0,043s
+sys     0m0,141s
+
+time ./main copy dane copy 100000 1 lib
+real    0m0,007s
+user    0m0,007s
+sys     0m0,001s
+
+time ./main copy dane copy 50000 4 sys
+real    0m0,094s
+user    0m0,026s
+sys     0m0,068s
+
+time ./main copy dane copy 50000 4 lib
+real    0m0,006s
+user    0m0,003s
+sys     0m0,003s
+
+time ./main copy dane copy 100000 4 sys
+real    0m0,181s
+user    0m0,051s
+sys     0m0,130s
+
+time ./main copy dane copy 100000 4 lib
+real    0m0,015s
+user    0m0,011s
+sys     0m0,004s
+
+time ./main copy dane copy 50000 512 sys
+real    0m0,149s
+user    0m0,027s
+sys     0m0,121s
+
+time ./main copy dane copy 50000 512 lib
+real    0m0,131s
+user    0m0,007s
+sys     0m0,025s
+
+time ./main copy dane copy 100000 512 sys
+real    0m0,223s
+user    0m0,051s
+sys     0m0,171s
+
+time ./main copy dane copy 100000 512 lib
+real    0m0,257s
+user    0m0,016s
+sys     0m0,043s
+
+time ./main copy dane copy 50000 1024 sys
+real    0m0,162s
+user    0m0,030s
+sys     0m0,130s
+
+time ./main copy dane copy 50000 1024 lib
+real    0m0,219s
+user    0m0,014s
+sys     0m0,065s
+
+time ./main copy dane copy 100000 1024 sys
+real    0m0,258s
+user    0m0,048s
+sys     0m0,210s
+
+time ./main copy dane copy 100000 1024 lib
+real    0m0,094s
+user    0m0,018s
+sys     0m0,076s
+
+time ./main copy dane copy 50000 4096 sys
+real    0m0,218s
+user    0m0,021s
+sys     0m0,196s
+
+time ./main copy dane copy 50000 4096 lib
+real    0m0,181s
+user    0m0,032s
+sys     0m0,148s
+
+time ./main copy dane copy 100000 4096 sys
+real    0m0,444s
+user    0m0,046s
+sys     0m0,396s
+
+time ./main copy dane copy 100000 4096 lib
+real    0m0,809s
+user    0m0,080s
+sys     0m0,274s
+
+time ./main copy dane copy 50000 8192 sys
+real    0m0,361s
+user    0m0,024s
+sys     0m0,331s
+
+time ./main copy dane copy 50000 8192 lib
+real    0m0,365s
+user    0m0,059s
+sys     0m0,304s
+
+time ./main copy dane copy 100000 8192 sys
+real    0m0,748s
+user    0m0,051s
+sys     0m0,618s
+
+time ./main copy dane copy 100000 8192 lib
+real    0m1,122s
+user    0m0,142s
+sys     0m0,940s
