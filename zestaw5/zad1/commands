@@ -1,0 +1,3 @@
+ls -la . | grep main
+ls -la . | grep Makefile
+ls -la . | grep \.c
