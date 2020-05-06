@@ -2,6 +2,7 @@
 
 compile:
 	clear
+	touch result.ascii.pgm
 	$(CC) main.c -o main
 
 exec:
@@ -10,7 +11,7 @@ exec:
 
 clear:
 	clear
-	rm -f main
+	rm -f main result.ascii.pgm
 
 
 	

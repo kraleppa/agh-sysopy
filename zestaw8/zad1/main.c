@@ -134,7 +134,6 @@ int interleaved_thread(int *thread) {
 }
 
 int main(int argc, char *argv[]){
-    printf("EEEE");
 
     if (argc != 5){
         perror("Syntax error :<\n");
@@ -145,6 +144,8 @@ int main(int argc, char *argv[]){
     char *mode = argv[2];
     char *intput_file = argv[3];
     char *output_file = argv[4];
+
+    
     
     read_img(intput_file);
     struct timespec start;
