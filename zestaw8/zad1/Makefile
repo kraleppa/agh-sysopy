@@ -1,4 +1,4 @@
- CC = gcc -Wall -pthread
+ CC = gcc -Wall -pthread -g
 
 compile:
 	clear

@@ -34,7 +34,8 @@ void read_line(char *buff, FILE *file){
 
 void read_img(char *file_name){
     FILE *file = fopen(file_name, "r");
-    char buff[MAX_LINE_LENGTH + 1];
+    char buff[MAX_LINE_LENGTH + 1] = {0};
+    read_line(buff, file);
     read_line(buff, file);
     width = atoi(strtok(buff, EMPTYSPACE));
     height = atoi(strtok(NULL, EMPTYSPACE));
@@ -133,6 +134,8 @@ int interleaved_thread(int *thread) {
 }
 
 int main(int argc, char *argv[]){
+    printf("EEEE");
+
     if (argc != 5){
         perror("Syntax error :<\n");
         exit(1);
@@ -142,7 +145,7 @@ int main(int argc, char *argv[]){
     char *mode = argv[2];
     char *intput_file = argv[3];
     char *output_file = argv[4];
-
+    
     read_img(intput_file);
     struct timespec start;
     clock_gettime(CLOCK_MONOTONIC, &start);
@@ -150,6 +153,8 @@ int main(int argc, char *argv[]){
     for (int i = 0; i < threads_number; i++) {
         hist_pieces[i] = calloc(MAX_COLOR, sizeof(int));
     }
+
+    
 
     pthread_t *threads = calloc(threads_number, sizeof(pthread_t));
     int *args = calloc(threads_number, sizeof(int));
