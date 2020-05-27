@@ -1,0 +1,118 @@
+POMIARY CZASU DLA OBRAZU screws.ascii.pgm
+
+===================================================================================
+mode:       sign
+threads:    1
+
+thread: 0 time: 1298 ms
+total time:     1434 ms
+
+===================================================================================
+mode:       sign
+threads:    2
+
+thread: 0 time: 1207 ms
+thread: 1 time: 1529 ms
+total time:     1653 ms
+
+===================================================================================
+mode:       sign
+threads:    4
+
+thread: 0 time: 1015 ms
+thread: 1 time: 1210 ms
+thread: 2 time: 1547 ms
+thread: 3 time: 1146 ms
+total time: 2352 ms
+
+===================================================================================
+mode:       sign
+threads:    8
+
+thread: 0 time: 967 ms
+thread: 1 time: 975 ms
+thread: 2 time: 1030 ms
+thread: 3 time: 1139 ms
+thread: 4 time: 1909 ms
+thread: 5 time: 1672 ms
+thread: 6 time: 2160 ms
+thread: 7 time: 1030 ms
+total time: 3239 ms
+
+===================================================================================
+mode:       block
+threads:    1
+
+thread: 0 time: 821 ms
+total time: 965 ms
+
+===================================================================================
+mode:       block
+threads:    2
+
+thread: 0 time: 1061 ms
+thread: 1 time: 1269 ms
+total time: 1454 ms
+
+===================================================================================
+mode:       block
+threads:    4
+
+thread: 0 time: 233 ms
+thread: 1 time: 242 ms
+thread: 2 time: 238 ms
+thread: 3 time: 285 ms
+total time: 659 ms
+
+===================================================================================
+mode:       block
+threads:    8
+
+thread: 0 time: 267 ms
+thread: 1 time: 257 ms
+thread: 2 time: 238 ms
+thread: 3 time: 319 ms
+thread: 4 time: 255 ms
+thread: 5 time: 302 ms
+thread: 6 time: 240 ms
+thread: 7 time: 203 ms
+total time: 1477 ms
+
+===================================================================================
+mode:       interleaved
+threads:    1
+
+thread: 0 time: 801 ms
+total time: 942 ms
+
+===================================================================================
+mode:       interleaved
+threads:    2
+
+thread: 0 time: 1017 ms
+thread: 1 time: 913 ms
+total time: 1681 ms
+
+===================================================================================
+mode:       interleaved
+threads:    4
+
+thread: 0 time: 249 ms
+thread: 1 time: 239 ms
+thread: 2 time: 236 ms
+thread: 3 time: 217 ms
+total time: 375 ms
+
+===================================================================================
+mode:       interleaved
+threads:    8
+
+thread: 0 time: 154 ms
+thread: 1 time: 311 ms
+thread: 2 time: 118 ms
+thread: 3 time: 108 ms
+thread: 4 time: 109 ms
+thread: 5 time: 109 ms
+thread: 6 time: 109 ms
+thread: 7 time: 107 ms
+total time: 714 ms
