@@ -16,6 +16,7 @@
 typedef struct {
     char *name;
     int fd;
+    struct sockaddr addr;
     int is_alive;
 } client_t;
 
@@ -25,34 +26,21 @@ int number_of_clients = 0;
 pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 int p_sockets(int l_socket, int n_socket) {
-    struct pollfd *pfds = calloc(number_of_clients + 2, sizeof(struct pollfd));
+    struct pollfd pfds[2];
     pfds[0].fd = l_socket;
     pfds[0].events = POLLIN;
     pfds[1].fd = n_socket;
     pfds[1].events = POLLIN;
-    pthread_mutex_lock(&clients_mutex);
 
-    for(int i = 0; i < number_of_clients; i++){
-        pfds[i + 2].fd = clients[i] -> fd;
-        pfds[i + 2].events = POLLIN;
-    }
-    pthread_mutex_unlock(&clients_mutex);
-    poll(pfds, number_of_clients + 2, -1);
+    poll(pfds, 2, -1);
 
-    int return_value;
-    for (int i = 0; i < number_of_clients + 2; i++){
+    for (int i = 0; i < 2; i++) {
         if (pfds[i].revents & POLLIN) {
-            return_value = pfds[i].fd;
-            break;
+            return pfds[i].fd;
         }
     }
 
-    if (return_value == l_socket || return_value == n_socket){
-        return_value = accept(return_value, NULL, NULL);
-    }
-
-    free(pfds);
-    return return_value;
+    return -1;
 }
 
 int get_player_by_name(char *name){
@@ -71,7 +59,7 @@ int get_oponent(int i){
     return i - 1; 
 }
 
-int add_client(char *name, int fd){
+int add_client(char* name, struct sockaddr addr, int fd){
     if (get_player_by_name(name) != -1){
         return -1;
     }
@@ -95,6 +83,7 @@ int add_client(char *name, int fd){
         client_t *new_client = calloc(1, sizeof(client_t));
         new_client -> name = calloc(MAX_MESSAGE_LENGTH, sizeof(char));
         strcpy(new_client -> name, name);
+        new_client->addr = addr;
         new_client -> fd = fd;
         new_client -> is_alive = 1;
         clients[i] = new_client;
@@ -116,7 +105,8 @@ void remove_client(char *name) {
     number_of_clients--;
     int o_i = get_oponent(c_i);
     if (clients[o_i] != NULL) {
-        printf("removing opponent");
+        puts("removing opponent");
+        sendto(clients[o_i]->fd, "quit: ", MAX_MESSAGE_LENGTH, 0, &clients[o_i]->addr, sizeof(struct addrinfo));
         free(clients[o_i]->name);
         free(clients[o_i]);
         clients[o_i] = NULL;
@@ -137,7 +127,8 @@ void p_loop() {
     for (int i = 0; i < MAX_PLAYERS; i++) {
         if (clients[i] != NULL) {
             printf("sending");
-            send(clients[i]->fd, "ping: ", MAX_MESSAGE_LENGTH, 0);
+            sendto(clients[i]->fd, "ping: ", MAX_MESSAGE_LENGTH, 0,
+                   &clients[i]->addr, sizeof(struct addrinfo));
             clients[i] -> is_alive = 0;
         }
     }
@@ -147,15 +138,13 @@ void p_loop() {
 }
 
 int get_l_socket(char *path) {
-    int l_socket = socket(AF_UNIX, SOCK_STREAM, 0);
-    struct sockaddr_un l_sockaddr;
-    memset(&l_sockaddr, 0, sizeof(struct sockaddr_un));
-    l_sockaddr.sun_family = AF_UNIX;
-    strcpy(l_sockaddr.sun_path, path);
+    int l_socket = socket(AF_UNIX, SOCK_DGRAM, 0);
+    struct sockaddr_un local_sockaddr;
+    memset(&local_sockaddr, 0, sizeof(struct sockaddr_un));
+    local_sockaddr.sun_family = AF_UNIX;
+    strcpy(local_sockaddr.sun_path, path);
     unlink(path);
-    bind(l_socket, (struct sockaddr*)&l_sockaddr, sizeof(struct sockaddr_un));
-    listen(l_socket, MAX_BACKLOG);
-
+    bind(l_socket, (struct sockaddr*)&local_sockaddr, sizeof(struct sockaddr_un));
     return l_socket;
 }
 
@@ -163,13 +152,12 @@ int get_n_socket(char *port) {
     struct addrinfo* info;
     struct addrinfo hints;
     memset(&hints, 0, sizeof(struct addrinfo));
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_DGRAM;
     hints.ai_flags = AI_PASSIVE;
     getaddrinfo(NULL, port, &hints, &info);
-    int n_socket = socket(info -> ai_family, info -> ai_socktype, info -> ai_protocol);
-    bind(n_socket, info -> ai_addr, info -> ai_addrlen);
-    listen(n_socket, MAX_BACKLOG);
+    int n_socket = socket(info->ai_family, info->ai_socktype, info->ai_protocol);
+    bind(n_socket, info->ai_addr, info->ai_addrlen);
     freeaddrinfo(info);
     return n_socket;
 }
@@ -188,38 +176,52 @@ int main(int argc, char* argv[]){
     pthread_t thread;
     pthread_create(&thread, NULL, (void* (*)(void*))p_loop, NULL);
     while (1) {
-        int client_fd = p_sockets(l_socket, n_socket);
-        char buff[MAX_MESSAGE_LENGTH + 1];
-        recv(client_fd, buff, MAX_MESSAGE_LENGTH, 0);
-        printf("%s", buff);
-        char *cmd = strtok(buff, ":");
-        char *arg = strtok(NULL, ":");
-        char *nickname = strtok(NULL, ":");
+        int socket_fd = p_sockets(l_socket, n_socket);
+
+        char buffer[MAX_MESSAGE_LENGTH + 1];
+        struct sockaddr from_addr;
+        socklen_t from_length = sizeof(struct sockaddr);
+        recvfrom(socket_fd, buffer, MAX_MESSAGE_LENGTH, 0, &from_addr,
+                 &from_length);
+        puts(buffer);
+
+        char* cmd = strtok(buffer, ":");
+        char* arg = strtok(NULL, ":");
+        char* nickname = strtok(NULL, ":");
+
         pthread_mutex_lock(&clients_mutex);
         if (strcmp(cmd, "add") == 0) {
-            int i = add_client(nickname, client_fd);
-            if (i == -1) {
-                send(client_fd, "add:name_taken", MAX_MESSAGE_LENGTH, 0);
-                close(client_fd);
-            } else if (i % 2 == 0) {
-                send(client_fd, "add:no_enemy", MAX_MESSAGE_LENGTH, 0);
+            int index = add_client(nickname, from_addr, socket_fd);
+
+            if (index == -1) {
+                sendto(socket_fd, "add:name_taken", MAX_MESSAGE_LENGTH, 0,
+                       (struct sockaddr*)&from_addr, sizeof(struct addrinfo));
+            } else if (index % 2 == 0) {
+                sendto(socket_fd, "add:no_enemy", MAX_MESSAGE_LENGTH, 0,
+                       (struct sockaddr*)&from_addr, sizeof(struct addrinfo));
             } else {
                 int waiting_client_goes_first = rand() % 2;
-                int first_player_i = i - waiting_client_goes_first;
-                int second_player_i = get_oponent(first_player_i);
+                int first_player_index = index - waiting_client_goes_first;
+                int second_player_index = get_oponent(first_player_index);
 
-                send(clients[first_player_i]->fd, "add:O",
-                     MAX_MESSAGE_LENGTH, 0);
-                send(clients[second_player_i]->fd, "add:X",
-                     MAX_MESSAGE_LENGTH, 0);
+                sendto(clients[first_player_index]->fd, "add:O",
+                       MAX_MESSAGE_LENGTH, 0,
+                       &clients[first_player_index]->addr,
+                       sizeof(struct addrinfo));
+                sendto(clients[second_player_index]->fd, "add:X",
+                       MAX_MESSAGE_LENGTH, 0,
+                       &clients[second_player_index]->addr,
+                       sizeof(struct addrinfo));
             }
         }
         if (strcmp(cmd, "move") == 0) {
             int move = atoi(arg);
             int player = get_player_by_name(nickname);
 
-            sprintf(buff, "move:%d", move);
-            send(clients[get_oponent(player)]->fd, buff, MAX_MESSAGE_LENGTH, 0);
+            sprintf(buffer, "move:%d", move);
+            sendto(clients[get_oponent(player)]->fd, buffer,
+                   MAX_MESSAGE_LENGTH, 0, &clients[get_oponent(player)]->addr,
+                   sizeof(struct addrinfo));
         }
         if (strcmp(cmd, "quit") == 0) {
             remove_client(nickname);
